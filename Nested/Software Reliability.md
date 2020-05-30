@@ -1,0 +1,1 @@
+Current software is hopelessly unreliable. It's no surprise, given the results that [[Software Analysis]] show us: programs become complicated extremely quickly. 

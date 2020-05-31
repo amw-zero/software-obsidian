@@ -4,4 +4,5 @@ I wonder how to make tests less fragile. I think it has something to do with the
 
 It also always seems like whatever tests you have, you want the opposite when refactoring. When you are changing low level details, you wish you had high level tests. When you are changing high level structure, you wish that edge case checking is preserved.
 
+[[Test Case Migrations]]
 What if there is a way to have both sets of tests, but only use one or the other depending on the refactoring task you're doing?

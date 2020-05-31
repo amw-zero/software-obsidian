@@ -5,7 +5,7 @@ Do the inputs catch bugs before a change is made? (prevention)
 
 Do the inputs catch bugs after a change is made? (regression)
 
-Do the inputs prevent change?
+Do the inputs prevent change? (deeply nested data)
 
 # What is a program?
 A program maps input data to output data via a control flow graph.
@@ -22,7 +22,7 @@ if (x == 5 || x == 17) {
   print("B")
 }
 
-x and y are the inputs, and the control flow graph is this:
+x inputs, and the control flow graph is this:
 
 O [Root]
 |-- O [A] (x == 5 || x == 17) "A"
@@ -100,34 +100,32 @@ First order predicate logic, conjunction + disjunction
 
 https://en.wikipedia.org/wiki/Logical_connective#/media/File:Logical_connectives_Hasse_diagram.svg
 
-Product type:
-
-{
-  rank: int
-  suit: suit
-}
-
-So called because they represent the product of all of the constituent types, i.e int * suit, AND
-
 Sum type:
 
-enum suit [:hearts, :diamonds, :clubs, :spades]
+type spaceType = 
+  | Retail
+  | Industrial
+  | Office
 
-So called because they represent the sum of the individual cases, OR, i.e. there are only 4 possible suit values.
+So called because they represent the sum of the individual cases, OR, i.e. there are only 3 possible space types
 
 Enum values almost always are treated all alike or all different. 
 
 Tip: When testing enum values, use different cases for each of because they are inherently distinct.
 
-Space is a great example:
+Product type:
 
-space = {
-  suite: "Suite 10A",
-  type: [:retail]
+type occupancyStatus = 
+  | Occupied
+  | Vacant
+
+type space = {
+  occupancyStatus: occupancyStatus
+  spaceType: spaceType
 }
 
-n(string) is infinite, but only a single partition { all strings }. No special rules for strings
-n(space type) is 3, [:retail, :office, :industrial]
+So called because they represent the product of all of the constituent types, i.e n(occupancyStatus) * n(spaceType)
+= 2 * 3 = 6
 
 # It's all about the inputs
 Graphs are O(n^2)
@@ -136,7 +134,7 @@ Input combinations are O(2^n)
 
 # The Tests I'd Write
 
-90% of app is forms and tables, and profiles. aka commands and queries, and there's a frontend and backend component, i.e.
+90% of our apps are forms, tables, and profiles. aka commands and queries, and there's a frontend and backend component, i.e.
 
 |           | Form | Table | Profile |
 |------|------|-------|---------|
@@ -145,10 +143,57 @@ Input combinations are O(2^n)
 
 6 different categories of behavior, modeled as pure functions:
 
-Frontend table:
+### Frontend table:
 
-makes network request to server, displays results:
+makes network request to server, displays formatted results, paginated:
 
-table(dataService) => 
 
-Frontend
+// Domain
+type spaceType = 
+  | Retail
+  | Office
+  | Industrial
+
+type space = {
+  suite: string,
+  type: spaceType
+}
+
+// Application - distinct from View
+type query = {
+    page: int,
+	pageSize: int
+}
+
+n(query) => infinity :(
+
+// View
+
+type displaySpace = {
+  ? 
+}
+
+function spacesDataService(query) => [space]
+
+function spacesTable(dataService) => [displaySpace]
+function spacesTable((query) => [space]) => [displaySpace]
+function spacesTable(query) => [space]
+
+### Backend Table:
+
+function spacesIndex(query)
+
+// Since spaces exist in the database, this always executes in a "data context", which in this case is a list of spaces
+
+function spacesTable(page, pageSize, [space]) => [space]
+
+Test cases:
+
+
+
+# Advice
+* Know how many values a type can represent
+	* Product type and sum type rules 
+* When a type can represent a huge number of values, try and create a more strict type that represents fewer values
+	* This avoids primitive obsession, and also drastically reduces the number of possible input values
+* 

@@ -12,3 +12,5 @@ The server accepts commands and returns queries. Queries can get complicated (in
 The main impact of a client-server architecture is that the [[Use Cases]] are now separated into two parts. You can't carry out a use case with just the client or the server, you need both. 
 
 Thought: is it possible to build and test the concerns independently? i.e., pagination, authentication, domain logic. A use case will then just be the composition of these system concerns, i.e. each concern is a "shell command" and the use case is a "shell script."
+
+# Visually

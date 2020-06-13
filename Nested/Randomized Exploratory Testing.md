@@ -1,0 +1,1 @@
+Randomly generate inputs and look for bugs. A subset of this is property-based testing.

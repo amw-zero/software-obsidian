@@ -1,0 +1,1 @@
+"But it highlights an important aspect of programming and difference from mathematics in that merely getting the right answer is not good enough. Not all isomorphisms are viable alternatives" - Rich Hickey, [A History of Clojure](https://download.clojure.org/papers/clojure-hopl-iv-final.pdf)

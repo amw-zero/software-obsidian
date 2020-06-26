@@ -17,15 +17,11 @@
   "workspaceLayout": {
     "id": "00bb3b8f88fb27da",
     "type": "split",
-    "dimension": null,
-    "direction": "vertical",
     "children": [
       {
         "id": "a0ee00323bb47a08",
         "type": "leaf",
-        "dimension": null,
         "active": true,
-        "master": "",
         "state": {
           "type": "markdown",
           "state": {
@@ -34,14 +30,67 @@
           }
         }
       }
-    ]
+    ],
+    "direction": "vertical"
   },
   "lastOpenFiles": [
     "Topics/Test Data Selection.md",
-    "Nested/Randomized Exploratory Testing.md",
+    "Nested/Effective Testing.md",
     "Nested/Software Reliability.md",
     "Nested/Untitled.md",
     "Root.md"
   ],
-  "alwaysUpdateLinks": true
+  "alwaysUpdateLinks": true,
+  "leftSidedock": {
+    "id": "336fa026e72e2dd9",
+    "type": "split",
+    "children": [
+      {
+        "id": "ca0fdeddc3f7a818",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1ac373ca36a8b50b",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "ce0074e9b88a6b42",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "rightSidedock": {
+    "id": "bc6329cb66781500",
+    "type": "split",
+    "children": [
+      {
+        "id": "11585930d24216ff",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3892df9da7d58dd9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {}
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  }
 }

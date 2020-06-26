@@ -5,6 +5,20 @@ You are a mail person, tasked with delivering mail along a specific route. Each 
 
 (The route is a call graph. The mail are the side effects of the program.)
 
+# Pattern Language
+- Bubble up the inputs
+- Specify the types
+- Form the domain
+- Sculpt the partitions
+
+**Bubble up the inputs**: Often, there is hoardes of implicit state, buried deep within nested objects. To be explicit about what the true inputs are, write the behavior as a pure function where all inputs must be passed in. This makes the domain explict.
+
+**Specify the types**: Once the inputs are known, create type definitions for them. This makes us explicitly list any constraints / boundaries, which is absolutely necessary in order to know the full universe of possibilities of each input. 
+
+**Form the domain**: Once the types are known, specify the total input domain.
+
+**Sculpt the partitions**: This is the magic 
+
 # How to best select test inputs?
 Do the inputs communicate the desired behavior clearly?
 
@@ -114,6 +128,71 @@ So called because they represent the product of all of the constituent types, i.
 
 # Tests for Everyday Features
 
+### Permissioning
+**Logic**: A user has access to view a deal if:
+- they have access to all of the deal's properties
+- and their asset role on all properties has the can_view_deals_renewal = true, or the deal's dealType is "New".
+
+**Types**:
+
+type assetRole = {
+  canViewDealsRenewal: bool
+}
+
+type user = { }
+
+type property = {
+	assetRoles: map(user -> assetRole)
+}
+
+type dealType =
+	| New
+	| Renewal
+	| Extension
+	| expansion 
+	| Termination
+	| Modification
+	... (14 total) ...
+
+type deal = {
+	dealType: dealType,
+	properties: list(property)
+}
+
+user -> assetRole
+deal -> dealType
+
+n(deal) = n(dealType) * n(list(property)) = infinite
+n(user) = irrelevant 
+
+ ==> Pundit.policy!(user, deal).show?
+ 
+ let canShowDeal(user, deal) => bool
+ 
+ First, we consider the data graph that this model provides. A deal can have multiple properties, and each of those properties has a set of users with specific access levels to them. In the "user has access" dimension, a user can either:
+ - have access to all deals on a property
+ - not have access to all deals on a property
+
+Dimensions / Equivalence classes:
+property count: 1, many
+properties that user has access to: all, some, none
+deal type: each kind (14)m
+properties with can_view_deals_renewal: all, some, none
+
+Total:
+2 * 3 * 14 * 3 = 252 cases
+only 5 deal types:
+
+Optimize by separately testing deal type mapping:
+2 * 3 * 1 * 3 = 18 cases + 13 testing each deal type = 31
+
+Examples:
+
+1 property, access to all properties, new deal, can_view_deal_renewal on all properties
+many properties, access to some, deal type new, can_view_deal_renewal on some
+
+ ### Application / Networking Logic
+
 90% of our apps are forms, tables, and profiles. aka commands and queries, and there's a frontend and backend component, i.e.
 
 |           | Form | Table | Profile |
@@ -131,7 +210,6 @@ The primary behaviors are making a network request to retrive spaces from the se
 
 With that in mind, here are some foundational types that the table component will use:
 
-
 ```
 // Application - distinct from View
 // --------------------------------
@@ -143,15 +221,14 @@ type spaceTableFilter =
   
 n(spaceFilter) => 3
 
-type error = 
-  | NetworkError
+type httpRequestError = 
+  | Timeout
   | Timeout
   | Message(string)
 
 type result('t, 'e) = 
   | Success(t)
   | Error(e)
-
 
 // View
 // -----
@@ -231,9 +308,13 @@ Well, n(space) = n(string) * n(spaceType) * n(option(float) * n(option(float)). 
 
 But, there's nothing interesting about the suite strings, we just display them directly. This is very common in information applications that just store and retrieve data. The interesting values are minimum and maximum rent though, which are optional which means that they can possibly be null. How should this range string be constructed in the presence of null values? 
 
-Let's think about the possible states that this can be in. The range takes in two optional float values, minimumRent and maximumRent. Each of these can be null or not, making the possibilities:
+Let's think about the possible states that this can be in. A sub-function of our full use case can be though of as:
 
-Truth table:
+```
+let rangeString = (minimumRent: option(float), maximumRent: option(float)) => string
+```
+
+The range takes in two optional float values, minimumRent and maximumRent. The *Rule of Product* tells us that there are 4 cases of data here since each value varies independently and each value has 2 possible states (null or a valid float). This can be shown in a truth table:
 
 00
 01
@@ -273,7 +354,7 @@ let spacesIndex = (filter: spaceTableFilter, repository: spaceRepositoryFunc) =>
 The first thing that jumps out is that the space repositroy function  has the exact same signature as the client request:
 
 ```
-let spaceRepository = (filter: spaceTableFilter) => result([space], error)
+let spaceRepository = (filter: spaceTableFilter) => result([space], databaseError)
 let spacesRequest =   (filter: spaceTableFilter) => result([space], error)
 ```
 
@@ -281,7 +362,12 @@ This shows that simple information features are primarily about moving data back
 
 They are tested very differently though. The client's responsibility is to simply handle the `result` that the server returns, but it cares about the values of `spaces`. It also uses the filter param for to construct different query params for the request URL.
 
-The server, uses the filter param to modify the SQL query to the database, but other than that it doesn't care at all about the returned `space`s. It simply forwards the results of the query. However, an additional responsibility of the server is authorization for example.
+The server uses the filter param to modify the SQL query to the database, but other than that it doesn't care at all about the returned `space`s. It simply forwards the results of the query. However, an additional responsibility of the server is authorization.
+
+
+```
+let spacesIndex = (filter: spaceTableFilter, repository: spaceRepositoryFunc) => result([space], databaseError)
+```
 
 function spacesIndex(query) => [space]
 function spacesIndex(page, pageSize) => [space]

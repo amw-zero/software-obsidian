@@ -6,9 +6,9 @@
 
 [[Use Cases]]
 
-[[Discrete Math]]
+[[Math]]
 
-[[Probability]]
+[[BooksRoot]]
 
 
 

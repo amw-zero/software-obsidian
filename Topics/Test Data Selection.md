@@ -176,7 +176,7 @@ n(user) = irrelevant
 Dimensions / Equivalence classes:
 property count: 1, many
 properties that user has access to: all, some, none
-deal type: each kind (14)m
+deal type: each kind (14)
 properties with can_view_deals_renewal: all, some, none
 
 Total:
@@ -190,6 +190,25 @@ Examples:
 
 1 property, access to all properties, new deal, can_view_deal_renewal on all properties
 many properties, access to some, deal type new, can_view_deal_renewal on some
+
+Simplified logic:
+
+```
+def show?(user, deal)
+  has_access_to_all_assets = deal.properties.all? do |property|
+    property.asset_role(user).present?
+  end
+
+  new_deal = deal.deal_type.name == 'new'
+
+  can_view_deals_renewal_on_all_properties = deal.properties.all? do |asset|
+    asset.asset_role(user).can_view_deals_renewal
+  end
+
+  has_access_to_all_assets && (new_deal || can_view_deals_renewal_on_all_properties)
+end
+
+```
 
  ### Application / Networking Logic
 

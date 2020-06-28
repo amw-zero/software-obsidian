@@ -25,7 +25,7 @@
         "state": {
           "type": "markdown",
           "state": {
-            "file": "Topics/Test Data Selection.md",
+            "file": "Nested/Category-Partition Method.md",
             "mode": "source"
           }
         }
@@ -34,11 +34,11 @@
     "direction": "vertical"
   },
   "lastOpenFiles": [
+    "Nested/Category-Partition Method.md",
     "Topics/Test Data Selection.md",
-    "Books/Shape Up.md",
-    "Books/Black Swan.md",
-    "Nested/Probability.md",
-    "Books/99 Bottles.md"
+    "Nested/Software Reliability.md",
+    "Nested/Untitled.md",
+    "Nested/Discrete Math.md"
   ],
   "alwaysUpdateLinks": true,
   "leftSidedock": {

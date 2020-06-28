@@ -156,7 +156,7 @@ type dealType =
 
 type deal = {
 	dealType: dealType,
-	properties: list(property)
+	properties: list(property)  // must have at least one property
 }
 
 user -> assetRole
@@ -173,23 +173,59 @@ n(user) = irrelevant
  - have access to all deals on a property
  - not have access to all deals on a property
 
-Dimensions / Equivalence classes:
+Full Domain:
+P is the number of properties in the db that the user has access to.
+
+n(list(property)) = 2^P
+n(dealType) = 14
+n(deal) = 14 * 2^P
+
+ex: P = 10, n = 14 * 2^10 = 14,336
+P = 5, n = 14 * 32 = 448
+
+deal1 = { dealType: New, properties: [property1, property9] }
+deal2 = { dealType: Renewal, properties: [property7, property8, property9] }
+
+allDeals = { deal1, deal2, ... }
+
+Category discovery, from [[Category-Partition Method]]
+
+Dimensions / Equivalence classes (categories!):
 property count: 1, many
 properties that user has access to: all, some, none
 deal type: each kind (14)
 properties with can_view_deals_renewal: all, some, none
 
+Domain = (Pc, Pa, DT, R), each combination 
+
 Total:
 2 * 3 * 14 * 3 = 252 cases
 only 5 deal types:
 
-Optimize by separately testing deal type mapping:
-2 * 3 * 1 * 3 = 18 cases + 13 testing each deal type = 31
+Optimize by removing deal type from the combinations, and adding them to the test cases afterwards:
+2 * 3 * 1 * 3 = 18 cases | 14 deal types can be spread out across these
 
 Examples:
 
-1 property, access to all properties, new deal, can_view_deal_renewal on all properties
-many properties, access to some, deal type new, can_view_deal_renewal on some
+(Pc=1, Pa=all, R=all)            ==> One property, renewal access to all
+(Pc=1, Pa=all, R=some)       ==> One property, full access, some renewals
+(Pc=1, Pa=all, R=none)        ==> One property, full access, no renewals
+(Pc=1, Pa=some, R=all)       ==> One property, partial access, all renewals
+(Pc=1, Pa=none, R=all)        ==> One property, no access, all renewal (N / A)
+(Pc=1, Pa=some, R=some)  ==> One property, partial access, some renewals
+(Pc=1, Pa=some, R=none)   ==> One property, partial access, no renewals -- should test in / out here, i.e. deal type == new and deal type != new
+(Pc=1, Pa=none, R=some)
+(Pc=1, Pa=none, R=none)
+
+(Pc=many, Pa=all, R=all)
+(Pc=many, Pa=all, R=some)
+(Pc=many, Pa=all, R=none)
+(Pc=many, Pa=some, R=all)
+(Pc=many, Pa=none, R=all)
+(Pc=many, Pa=some, R=some)
+(Pc=many, Pa=some, R=none)
+(Pc=many, Pa=none, R=some)
+(Pc=many, Pa=none, R=none)
 
 Simplified logic:
 

@@ -142,7 +142,7 @@ type assetRole = {
 type user = { }
 
 type property = {
-	assetRoles: map(user -> assetRole)
+	users: map(user -> assetRole)
 }
 
 type dealType =
@@ -159,12 +159,6 @@ type deal = {
 	properties: list(property)  // must have at least one property
 }
 
-user -> assetRole
-deal -> dealType
-
-n(deal) = n(dealType) * n(list(property)) = infinite
-n(user) = irrelevant 
-
  ==> Pundit.policy!(user, deal).show?
  
  let canShowDeal(user, deal) => bool
@@ -173,15 +167,99 @@ n(user) = irrelevant
  - have access to all deals on a property
  - not have access to all deals on a property
 
-Full Domain:
-P is the number of properties in the db that the user has access to.
+--
 
-n(list(property)) = 2^P
+
+*Domain Analysis*:
+U = # of users
+(P is the number of properties in the db (that the user has access to ?) - but can express this in terms of U, see below)
+
+
+^^ These are presented to account for the fact that dynamic data has a practically infinite n. Even though the type can represent a finite number of values, there is associated primary key stored with it in the db, meaning that the same values can be stored in the db multiple times with multiple different ids. But the id does not contribute to the logic here, only the possibilities of values does.
+
+Theorem: The number of distinct maps (containers? i.e. list) with key type having K possible values and value type having V possible values  = 
+(V + 1)^K number of distinct maps. (+ 1 represents the absence of the key from the map appearing as a "nil" value, acting as the +1th possible V value. This could also be achieved by wrapping V in an Option type, which adds 1 to the # of values that can be produce in that type: None)
+
+n(assetRole) = 2
+
+n(property) = n(map(user -> assetRole)) 
+= (V+1)^K 
+= (n(assetRole) + 1)^n(user) 
+= 3^U
+
+n(list(property)) = 2^3^U
+
 n(dealType) = 14
-n(deal) = 14 * 2^P
 
-ex: P = 10, n = 14 * 2^10 = 14,336
-P = 5, n = 14 * 32 = 448
+n(deal) = n(dealType) * n(list(property) = 14 * 2^3^U
+
+ex: 
+
+| U | n(deal) |
+|-- | -- |
+|0 | 28 |
+| 1 | 112 |
+| 2 | 7,168|
+| 3 | 1.879048E+09|
+| 4 | 3.384992E+25 |
+
+The 0 case is very unexpected, but you can create 14 deals, 1 for each deal type, and the deal can have either 0 or 1 properties in it. Since only 1 property value can be created with no users.
+
+This matches our intution. At only 4 users, the number of possible data graph combinations is astronomical
+
+U = 1
+
+U = 2:
+n = 9
+
+2^2 + 2*2^2 + 2^2
+{}, {u1}, {u2}, {u1, u2}
+
+2^(2^U - 1) + 1?
+(2^U - 1)^2 - 1?
+
+{u1 -> nil, u2 -> nil, u3 -> nil}
+
+{}
+{u1 -> {canViewDealsRenewal: false}}
+{u1 -> {canViewDealsRenewal: true}}
+{u2 -> {canViewDealsRenewal: false}}
+{u2 -> {canViewDealsRenewal: true}}
+{u1 -> {canViewDealsRenewal: false, u2 -> {canViewDealsRenewal: false}}}
+{u1 -> {canViewDealsRenewal: false, u2 -> {canViewDealsRenewal: true}}}
+{u1 -> {canViewDealsRenewal: true, u2 -> {canViewDealsRenewal: false}}}
+{u1 -> {canViewDealsRenewal: true, u2 -> {canViewDealsRenewal: true}}}
+
+U = 3:
+n = 27
+
+{}, {u1}, {u2}, {u3},{u1, u2}, {u1, u3}, {u2, u3}, {u1, u2, u3}
+{}
+{u1 -> {canViewDealsRenewal: false}}
+{u1 -> {canViewDealsRenewal: true}}
+{u2 -> {canViewDealsRenewal: false}}
+{u2 -> {canViewDealsRenewal: true}}
+{u3 -> {canViewDealsRenewal: false}}
+{u3 -> {canViewDealsRenewal: true}}
+
+{u1 -> {canViewDealsRenewal: false, u2 -> {canViewDealsRenewal: false}}}
+{u1 -> {canViewDealsRenewal: false, u2 -> {canViewDealsRenewal: true}}}
+{u1 -> {canViewDealsRenewal: true, u2 -> {canViewDealsRenewal: false}}}
+{u1 -> {canViewDealsRenewal: true, u2 -> {canViewDealsRenewal: true}}}
+
+{u2 -> {canViewDealsRenewal: false, u3 -> {canViewDealsRenewal: false}}}
+{u2 -> {canViewDealsRenewal: false, u3 -> {canViewDealsRenewal: true}}}
+{u2 -> {canViewDealsRenewal: true, u3 -> {canViewDealsRenewal: false}}}
+{u2 -> {canViewDealsRenewal: true, u3 -> {canViewDealsRenewal: true}}}
+
+{u1 -> {canViewDealsRenewal: false, u3 -> {canViewDealsRenewal: false}}}
+{u1 -> {canViewDealsRenewal: false, u3 -> {canViewDealsRenewal: true}}}
+{u1 -> {canViewDealsRenewal: true, u3 -> {canViewDealsRenewal: false}}}
+{u1 -> {canViewDealsRenewal: true, u3 -> {canViewDealsRenewal: true}}}
+
+{u1 -> {canViewDealsRenewal: false, u2 -> {canViewDealsRenewal: false}, u3 -> {canViewDealsRenewal: false}}}
+
+x 8 total
 
 deal1 = { dealType: New, properties: [property1, property9] }
 deal2 = { dealType: Renewal, properties: [property7, property8, property9] }

@@ -26,7 +26,7 @@
           "type": "markdown",
           "state": {
             "file": "Topics/Test Data Selection.md",
-            "mode": "source"
+            "mode": "preview"
           }
         }
       }
@@ -35,10 +35,10 @@
   },
   "lastOpenFiles": [
     "Topics/Test Data Selection.md",
-    "Topics/Shared Mutable State.md",
     "Nested/Category-Partition Method.md",
-    "Nested/Software Reliability.md",
-    "Nested/Untitled.md"
+    "Nested/System Boundaries.md",
+    "Nested/System Archetypes.md",
+    "Nested/Software Analysis.md"
   ],
   "alwaysUpdateLinks": true,
   "leftSidedock": {

@@ -149,10 +149,11 @@ type dealType =
 	| New
 	| Renewal
 	| Extension
-	| expansion 
+	| Expansion
 	| Termination
 	| Modification
-	... (14 total) ...
+	// ... 14 total
+	;
 
 type deal = {
 	dealType: dealType,
@@ -177,8 +178,22 @@ U = # of users
 
 ^^ These are presented to account for the fact that dynamic data has a practically infinite n. Even though the type can represent a finite number of values, there is associated primary key stored with it in the db, meaning that the same values can be stored in the db multiple times with multiple different ids. But the id does not contribute to the logic here, only the possibilities of values does.
 
-Theorem: The number of distinct maps (containers? i.e. list) with key type having K possible values and value type having V possible values  = 
+_Theorem_: The number of distinct maps (containers? i.e. list) with key type having K possible values and value type having V possible values  = 
 (V + 1)^K number of distinct maps. (+ 1 represents the absence of the key from the map appearing as a "nil" value, acting as the +1th possible V value. This could also be achieved by wrapping V in an Option type, which adds 1 to the # of values that can be produce in that type: None)
+
+| | user1 | user2 |
+| - | - | - |
+| canViewDealsRenewal | nil | nil |
+| | nil | false |
+| | nil | true |
+| | false | nil |
+| | false | false |
+| | false | true|
+| | true | nil |
+| | true | false |
+| | true | true| 
+
+
 
 n(assetRole) = 2
 
